@@ -28,7 +28,7 @@
                 <!-- <label for="orig-select">from:</label> -->
                 <select name="format" id="orig-select" class="custom-select">
                     <option value="">-- выберите формат --</option>
-                    <option value="jpeg">картинка в формате .jpeg</option>
+                    <option value="jpg">картинка в формате .jpg</option>
                     <option value="mp4">видео (.mp4)</option>
                     <option value="pdf">pdf-файл</option>
                     <option value="docx">документ Word (.docx)</option>
@@ -104,7 +104,7 @@
             pdf: ["docx"],
             docx: ["pdf"],
             mp4: ["mp3"],
-            jpeg: ["png"],
+            jpg: ["png"],
             png: ["jpg"],
             csv: ["xlsx"],
             xlsx: ["csv"],
@@ -176,6 +176,9 @@
 
                     try {
 
+                        button.style.backgroundColor = 'white';
+                        button.style.color = 'gray';
+
                         const response = await fetch('/uploadfile/', { 
                             method: 'POST',
                             body: formData
@@ -186,9 +189,18 @@
                             console.log('File uploaded successfully:', result);
                         } else {
                             console.error('File upload failed:', response.statusText);
+                            alert('Формат файла не соответствует формату, выбранному в списке. Выберите файл снова.');
+
+                            const button = document.getElementById('loadbutton');
+
+                            // 2. Change the color of the button
+                            button.style.backgroundColor = '#7c0d0d';
+                            button.style.color = 'white'; 
+                            button.innerText = 'выбрать снова'
                         }
                     } catch (error) {
                         console.error('Error during file upload:', error);
+
                     }
                 } else {
                     alert('Please select a file to upload.');

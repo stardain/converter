@@ -2,10 +2,10 @@
 main file duh
 
 ЧТО ДАЛЬШЕ:
-1. загрузить РАБОТАЮЩИЙ код на гитхаб
+--- 1. загрузить РАБОТАЮЩИЙ код на гитхаб ---
 2. почистить ненужные импорты, комментарии, костыли
 3. сделать относительные ссылки для дальнейшей транспортации в докер
-4. написать тесты (end-to-end) и отредактировать код для учёта всех случаев
+-- 4. написать тесты (end-to-end) и отредактировать код для учёта всех случаев --
 5. написать уместные комментарии в код
 6. запаковать всё в докер и обновить на гитхабе
 7. написать readme для гитхаба
@@ -19,7 +19,7 @@ import asyncio
 import time
 import shutil
 import json
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -41,7 +41,7 @@ DATA = {
             "pdf": "docx",
             "docx": "pdf",
             "mp4": "mp3",
-            "jpeg": "png",
+            "jpg": "png",
             "csv": "xlsx",
             "xlsx": "csv"
         }
@@ -83,7 +83,7 @@ async def transfer_format(extention: dict):
     except Exception:
         print("Something went wrong with changing FORMAT...")
     else:
-        print(FORMAT)
+        print(f"Stage 1, FORMAT TRANSFER, successful.")
         return {"format": FORMAT}
 
 
@@ -98,11 +98,25 @@ async def create_upload_file(
     global NAME
 
     NAME = document.filename.rsplit('\\')[-1].rsplit(".")[0]
+    real_format = document.filename.rsplit('\\')[-1].rsplit(".")[1]
 
-    while FORMAT == "EMPTY":
-        time.sleep(0.5)
+    #while FORMAT == "EMPTY":
+    #    time.sleep(0.5)
 
     address_before = f'D:\\Desktop\\projects\\fileconv\\files_to_process\\{''.join(document.filename.split())}'
+
+    print(real_format, FORMAT, DATA[FORMAT])
+
+    if real_format not in DATA or real_format != FORMAT:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": "Формат файла не соответствует формату, выбранному в списке. Выберите файл снова.",
+                "error_code": "INVALID_VALUE",
+                "suggestions": ["Проверьте соответствие форматов."]
+            }
+        )
+
 
     try:
         
@@ -115,7 +129,7 @@ async def create_upload_file(
     except Exception as e:
         print(f"Error SAVING file: {e}")
     else:
-        print("File saved successfully!!")
+        print("Stage 2, CONVERT AND SAVE, successful.")
         return {"address": address_before}
 
 
@@ -133,7 +147,7 @@ async def download_processed_file():
     if not os.path.exists(for_sending):
         return {"message": f"File {for_sending} not found"}, 404
 
-    print("Shi's gonna download!")
+    print("Stage 3, DOWNLOADING TO CLIENT'S, successful.")
 
     return FileResponse(
         path=for_sending,
@@ -147,8 +161,12 @@ async def cleanup(callback: dict):
     """
     Clean a working folder afterwards.
     """
-    if callback["status"] == "success":
-        shutil.rmtree("D:\\Desktop\\projects\\fileconv\\files_to_process")
 
+    name_actual = ''.join(NAME.split())
+
+    if callback["status"] == "success":
+        os.remove(f"D:\\Desktop\\projects\\fileconv\\files_to_process\\{name_actual}.{FORMAT}")
+        os.remove(f"D:\\Desktop\\projects\\fileconv\\files_to_process\\{name_actual}.{DATA[FORMAT]}")
+        # D:\Desktop\projects\fileconv\files_to_process\tududu.jpg
 
 app.mount("/", StaticFiles(directory="statics", html=True), name="design")

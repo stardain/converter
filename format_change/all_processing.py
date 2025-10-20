@@ -15,7 +15,7 @@ def process(FORMAT, file):
             "pdf": "docx",
             "docx": "pdf",
             "mp4": "mp3",
-            "jpeg": "png",
+            "jpg": "png",
             "csv": "xlsx",
             "xlsx": "csv"
         }
@@ -55,16 +55,16 @@ def process(FORMAT, file):
             print("SUCCESSFULLY converted to csv!")
 
 
-    if FORMAT == "jpeg": # OK!!
+    if FORMAT == "jpg": # OK!!
 
         try:
             im = Image.open(file)
             out = f"{file.rsplit('.')[0]}.png"
             im.save(out)
         except Exception:
-            print("Error CONVERTING jpeg to png.")
+            print("Error CONVERTING jpg to png.")
         else:
-            print("JPEG to PNG convertion successful!!")
+            print("JPG to PNG convertion successful!!")
 
 
     if FORMAT == "mp4": # ОК!!
