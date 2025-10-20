@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>раааааагх</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style.css" rel="stylesheet">
+
+</head>
+
+<div class="borders">
+
+<link rel="icon" type="image/png" href="images/favicon-96x96.png" sizes="96x96" />
+
+<body>
+
+    <h1>(￣▽￣)/♫•*¨* special place for CONVERTING •.¸¸♪</h1>
+
+    <div class="dropdowns">
+    <img src="images/rose.png" class="img-1">
+    <img src="images/rose.png" class="img-2">
+    <div>
+
+        <p>формат вашего файла (ノ_<。):</p>
+
+            <form>
+                <!-- <label for="orig-select">from:</label> -->
+                <select name="format" id="orig-select" class="custom-select">
+                    <option value="">-- выберите формат --</option>
+                    <option value="jpeg">картинка в формате .jpeg</option>
+                    <option value="mp4">видео (.mp4)</option>
+                    <option value="pdf">pdf-файл</option>
+                    <option value="docx">документ Word (.docx)</option>
+                    <option value="csv">csv-таблица</option>
+                    <option value="xlsx">эксель-таблица (.xlsx; НЕ .xls, не заработает)</option>
+                </select>
+            </form>
+    </div>
+
+    <div>
+            <p>желаемый ＼(＾▽＾)／ формат:</p>
+
+            <form>
+                <!-- <label for="final-select">to:</label> -->
+                <select name="format" id="final-select" class="custom-select">
+                    <option value="">-- выберите формат выше --</option>
+                </select>
+            </form>
+
+
+    </div>
+    </div>
+
+
+    <p>
+            имя файла:
+    </p>
+
+    <div class="upload-btn-wrapper">
+        <button class="btn" id="loadbutton">загрузить</button>
+        <input name="file" id="origfile" type="file">
+    </div>
+
+    <br>
+    <button class="btn-17" id="uploadbutton" onclick="SendFile()"><span class="text-container"><span class="text">начать</span></span></button>
+
+    <p style="font-size: 12px; border-width: 0; padding: 0; margin: 0; margin-top: 10px;">скачивание автоматическое <3</p>
+
+    </div>
+
+<script>
+
+/* FILE NAME CODE */
+
+        var button = document.getElementById('loadbutton');
+        var input  = document.getElementById('origfile');
+
+        // Making input invisible, but leaving shown fo graceful degradation
+        input.style.display = 'none';
+        button.style.display = 'initial';
+
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            input.click();
+        });
+
+        input.addEventListener('change', function () {
+            const fullPath = this.value; 
+            const fileName = fullPath.split('fakepath\\').pop();
+            button.innerText = fileName; 
+        });
+
+/* FILE NAME CODE END*/
+
+        const fileInput = document.getElementById('origfile');
+        const uploadButton = document.getElementById('uploadbutton');
+        const primaryDropdown = document.getElementById("orig-select");
+        const selectedCategory = primaryDropdown.value;
+        const dependentDropdown = document.getElementById("final-select");
+
+        const data = {
+            pdf: ["docx"],
+            docx: ["pdf"],
+            mp4: ["mp3"],
+            jpeg: ["png"],
+            png: ["jpg"],
+            csv: ["xlsx"],
+            xlsx: ["csv"],
+        };
+
+        function populateDependentDropdown() {
+
+            const primaryDropdown = document.getElementById("orig-select");
+            const selectedCategory = primaryDropdown.value;
+            const dependentDropdown = document.getElementById("final-select");
+
+            dependentDropdown.innerHTML = '<option value="">-- теперь здесь --</option>';
+            if (selectedCategory) {
+                const items = data[selectedCategory];
+                if (items) {
+                    items.forEach(item => {
+                        const option = document.createElement("option");
+                        option.value = item;
+                        option.textContent = item;
+                        dependentDropdown.appendChild(option);
+                    });
+                }
+            }
+        }
+
+        document.getElementById("orig-select").addEventListener("change", function() {
+            populateDependentDropdown();
+        });
+
+        function SendFile() {
+
+                uploadbutton.addEventListener('click', async () => {
+                const fileSent = fileInput.files[0];
+                const formatSent = document.getElementById('orig-select');
+
+                if (formatSent) {
+                    const selectedValue = formatSent.value;
+
+                    const selection = {
+                        "choice": selectedValue
+                        };
+
+                    try {
+                        const response = await fetch('/format/', { 
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                                },
+                            body: JSON.stringify(selection)
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log('Format sent successfully:', result);
+                        } else {
+                            console.error('Format sending failed:', response.statusText);
+                        }
+                    } catch (error) {
+                        console.error('Error during format send:', error);
+                    }
+                } else {
+                    alert('Please select a format.');
+                }
+
+                if (fileSent) {
+                    const formData = new FormData();
+                    
+                    formData.append('document', fileSent); 
+
+                    try {
+
+                        const response = await fetch('/uploadfile/', { 
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log('File uploaded successfully:', result);
+                        } else {
+                            console.error('File upload failed:', response.statusText);
+                        }
+                    } catch (error) {
+                        console.error('Error during file upload:', error);
+                    }
+                } else {
+                    alert('Please select a file to upload.');
+                }
+            });
+
+        }
+
+        async function downloadFile(url) {
+            
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Extract filename from Content-Disposition header
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = 'downloaded_file'; // Default filename
+
+                if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename\*?=["']?(.*?)["']?$/i);
+                if (filenameMatch && filenameMatch[1]) {
+                    filename = decodeURIComponent(filenameMatch[1]);
+                }
+                }
+
+                const blob = await response.blob();
+
+                // Create a temporary anchor element
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename; // Set the dynamic filename
+
+                // Programmatically click the link to trigger download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Revoke the object URL to free up memory
+                URL.revokeObjectURL(link.href);
+
+                const callback = await fetch('/cleancache', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        functionName: 'downloading_a_file',
+                        status: 'success',
+                    }),
+                });
+            
+            } catch (error) {
+                console.error('Error downloading the file:', error);
+            }
+        }
+
+        downloadFile('/download-processed-file');
+
+</script>
+</body>
+</html>
