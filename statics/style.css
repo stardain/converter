@@ -54,7 +54,7 @@ h1 {
   right: 10px;
 }
 
-/* LOAD FILE BUTTON */
+/* LOAD FILE BUTTON (open source style) */
 
 .upload-btn-wrapper {
   position: relative;
@@ -81,7 +81,7 @@ h1 {
   opacity: 0;
 }
 
-/* DROPDOWN */
+/* DROPDOWN (open source style) */
 
 .custom-select {
     -webkit-appearance: none;
@@ -89,7 +89,7 @@ h1 {
     appearance: menulist;
     height: 57px;
     padding: 10px 38px 10px 16px;
-    background: #fff url("select-arrows.svg") no-repeat right 16px center;
+    background: #fff no-repeat right 16px center;
     background-size: 10px;
     transition: border-color .1s ease-in-out,box-shadow .1s ease-in-out;
     border: 1px solid #ddd;
@@ -105,13 +105,11 @@ h1 {
     box-shadow: 0 3px 5px 0 rgba(0,0,0,.2);
     outline: none;
 }
-/* remove default arrow in IE 
+
 select::-ms-expand {
     display:none;
 }
-*/
 
-/* DEMO STYLING */
 html {
     height: 100%;
     font-size: 62.5%;
@@ -145,7 +143,7 @@ a:hover {
     font-size: 1.6rem;
 }
 
-/* SEND BUTTON */
+/* SEND BUTTON (open source style) */
 
 .btn-17,
 .btn-17 *,

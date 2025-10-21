@@ -1,107 +1,103 @@
+"""
+Processing file. All processing is done by specialized libraries.
+"""
+
 import csv
-import io
-import os
-from openpyxl import Workbook, load_workbook
 from PIL import Image
 import ffmpeg
 from pdf2docx import Converter
-import tempfile
-from pathlib import Path
 from docx2pdf import convert
+from openpyxl import Workbook, load_workbook
 
-def process(FORMAT, file):
+def process(picked_format, file):
 
-    DATA = {
-            "pdf": "docx",
-            "docx": "pdf",
-            "mp4": "mp3",
-            "jpg": "png",
-            "csv": "xlsx",
-            "xlsx": "csv"
-        }
+    """
+    Function containing all possible convertations. 
+    1. Receives a file from controller,
+    2. converts it,
+    3. saves it here and now.
+    """
 
-    if FORMAT == "csv": # OK!!
+    if picked_format == "csv": 
 
         try:
             wb = Workbook()
             worksheet = wb.active
 
-            with open(file, "r", newline="") as input_file:
+            with open(file, "r", newline="", encoding="utf-8") as input_file:
                 reader = csv.reader(input_file, delimiter=',')
                 for row in reader:
                     worksheet.append(row)
-
             wb.save(f"{file.rsplit('.')[0]}.xlsx")
+
         except Exception:
-            print("CONVERTING ERROR (from csv to xlsx).")
+            print("CONVERTING error (from csv to xlsx).")
         else:
-            print("Success converting!!")
+            print("Successful csv to xlsx convertation.")
 
 
-    if FORMAT == "xlsx": # OK!!
+    if picked_format == "xlsx": 
 
         try:
             wb = load_workbook(file)
-            sh = wb.active
+            worksheet = wb.active
 
-            with open(f"{file.rsplit('.')[0]}.csv", 'w', newline="") as output:
+            with open(f"{file.rsplit('.')[0]}.csv", 'w', newline="", encoding="utf-8") as output:
                 csv_writer = csv.writer(output)
-                for row in sh.iter_rows():
+                for row in worksheet.iter_rows():
                     csv_writer.writerow([cell.value for cell in row])
 
         except Exception:
-            print("Error CONVERTING excel to csv...")
+            print("CONVERTING error (xlsx to csv).")
         else:
-            print("SUCCESSFULLY converted to csv!")
+            print("Successful csv to xlsx convertation.")
 
 
-    if FORMAT == "jpg": # OK!!
+    if picked_format == "jpg": 
 
         try:
-            im = Image.open(file)
-            out = f"{file.rsplit('.')[0]}.png"
-            im.save(out)
+            original_image = Image.open(file)
+            final_image = f"{file.rsplit('.')[0]}.png"
+            original_image.save(final_image)
         except Exception:
-            print("Error CONVERTING jpg to png.")
+            print("CONVERTING error (jpg to png).")
         else:
-            print("JPG to PNG convertion successful!!")
+            print("Successful jpg to png convertation.")
 
 
-    if FORMAT == "mp4": # ОК!!
+    if picked_format == "mp4":
 
         output_audio_path = f'{file.rsplit('.')[0]}.mp3'
 
         try:
             ffmpeg.input(file).output(output_audio_path, acodec='libmp3lame').run(overwrite_output=True)
         except ffmpeg.Error as e:
-            print(f"Error EXTRACTING AUDIO: {e.stderr.decode('utf8')}")
-        except FileNotFoundError:
-            print("Error: ffmpeg not found. Make sure ffmpeg is installed and in your system's PATH.")
+            print(f"Error made by converting library: {e}.")
         else:
-            print("mp 4 TO 3 SUCCESSFULLY!!")
+            print("Successful mp4 to mp3 convertation.")
 
 
-    if FORMAT == "docx": # OK!!
+    if picked_format == "docx": 
 
-        result = f"{file.rsplit('.')[0]}.pdf"
+        converted_file = f"{file.rsplit('.')[0]}.pdf"
 
         try:
-            convert(file, result)
+            convert(file, converted_file)
         except Exception as e:
-            print(f"Error CONVERTING file: {e}")
+            print(f"CONVERTING error: {e}")
         else:
-            print("Damn it worked!!")
+            print("Successful docx to pdf convertion.")
 
 
-    if FORMAT == "pdf": # OK!!
+    if picked_format == "pdf": 
 
-        result = f"{file.rsplit('.')[0]}.docx"
+        converted_file = f"{file.rsplit('.')[0]}.docx"
 
         try:
             cv = Converter(file)
-            cv.convert(result)
+            cv.convert(converted_file)
             cv.close()
         except Exception:
-            print("Error CONVERTING pdf to docx...")
+            print("CONVERTING error (pdf to docx).")
         else:
-            print("CONVERTED successfully!!")
+            print("Successful pdf to docx converting.")

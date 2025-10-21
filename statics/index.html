@@ -2,7 +2,7 @@
 <html>
 <head>
 
-    <title>раааааагх</title>
+    <title>number one</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="style.css" rel="stylesheet">
@@ -11,7 +11,7 @@
 
 <div class="borders">
 
-<link rel="icon" type="image/png" href="images/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/png" href="images/favicon-96x96.png" sizes="96x96"/>
 
 <body>
 
@@ -25,7 +25,6 @@
         <p>формат вашего файла (ノ_<。):</p>
 
             <form>
-                <!-- <label for="orig-select">from:</label> -->
                 <select name="format" id="orig-select" class="custom-select">
                     <option value="">-- выберите формат --</option>
                     <option value="jpg">картинка в формате .jpg</option>
@@ -42,7 +41,6 @@
             <p>желаемый ＼(＾▽＾)／ формат:</p>
 
             <form>
-                <!-- <label for="final-select">to:</label> -->
                 <select name="format" id="final-select" class="custom-select">
                     <option value="">-- выберите формат выше --</option>
                 </select>
@@ -52,10 +50,7 @@
     </div>
     </div>
 
-
-    <p>
-            имя файла:
-    </p>
+    <p>имя файла:</p>
 
     <div class="upload-btn-wrapper">
         <button class="btn" id="loadbutton">загрузить</button>
@@ -71,18 +66,16 @@
 
 <script>
 
-/* FILE NAME CODE */
+/* load button text change */
 
         var button = document.getElementById('loadbutton');
         var input  = document.getElementById('origfile');
 
-        // Making input invisible, but leaving shown fo graceful degradation
         input.style.display = 'none';
         button.style.display = 'initial';
 
         button.addEventListener('click', function (e) {
             e.preventDefault();
-            
             input.click();
         });
 
@@ -92,7 +85,7 @@
             button.innerText = fileName; 
         });
 
-/* FILE NAME CODE END*/
+/* code for converting possibilities to display correctly (adapting second selection element to the first) */
 
         const fileInput = document.getElementById('origfile');
         const uploadButton = document.getElementById('uploadbutton');
@@ -112,9 +105,12 @@
 
         function populateDependentDropdown() {
 
+            /* duplicates somehow necessary */
+
             const primaryDropdown = document.getElementById("orig-select");
             const selectedCategory = primaryDropdown.value;
             const dependentDropdown = document.getElementById("final-select");
+            
 
             dependentDropdown.innerHTML = '<option value="">-- теперь здесь --</option>';
             if (selectedCategory) {
@@ -134,6 +130,8 @@
             populateDependentDropdown();
         });
 
+/* sending file and its format for converting + alert and button recoloring after error*/
+
         function SendFile() {
 
                 uploadbutton.addEventListener('click', async () => {
@@ -148,7 +146,7 @@
                         };
 
                     try {
-                        const response = await fetch('/format/', { 
+                        const response = await fetch('/uploadformat', { 
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -179,7 +177,7 @@
                         button.style.backgroundColor = 'white';
                         button.style.color = 'gray';
 
-                        const response = await fetch('/uploadfile/', { 
+                        const response = await fetch('/uploadfile', { 
                             method: 'POST',
                             body: formData
                         });
@@ -209,6 +207,8 @@
 
         }
 
+/* downloading converted file + sending callback that it's ok to clean temporary files to server side */
+
         async function downloadFile(url) {
             
             try {
@@ -218,9 +218,8 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                // Extract filename from Content-Disposition header
                 const contentDisposition = response.headers.get('Content-Disposition');
-                let filename = 'downloaded_file'; // Default filename
+                let filename = 'converted_file'; 
 
                 if (contentDisposition) {
                 const filenameMatch = contentDisposition.match(/filename\*?=["']?(.*?)["']?$/i);
@@ -228,20 +227,19 @@
                     filename = decodeURIComponent(filenameMatch[1]);
                 }
                 }
+                
+                /* fake object for downloading from server */
 
                 const blob = await response.blob();
 
-                // Create a temporary anchor element
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = filename; // Set the dynamic filename
+                link.download = filename; 
 
-                // Programmatically click the link to trigger download
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
 
-                // Revoke the object URL to free up memory
                 URL.revokeObjectURL(link.href);
 
                 const callback = await fetch('/cleancache', {
@@ -260,7 +258,7 @@
             }
         }
 
-        downloadFile('/download-processed-file');
+        downloadFile('/download');
 
 </script>
 </body>
