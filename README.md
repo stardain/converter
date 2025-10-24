@@ -5,15 +5,16 @@ All processing is done by libraries listed below.
 
 <br>
 
-## description
+## converting capabilities
 
-### converting capabilities
 - CSV to XLSX (+ vica verca) — done by standard **csv** and **openpyxl**
 - JPG to PNG, for creating transparent elements later — done by **PIL**
 - MP4 to MP3, for illegal music listening — done by **ffmpeg**
 - DOCX to PDF (+ vica verca) — done by **pdf2docx** and **docx2pdf**
 
-### development notes
+<br>
+
+## development notes
 
 - I used FASTAPI.
 - Most endpoints strictly depend on other endpoints' results. Part of the realization depend on JS' synchronous nature, part is synchronized by awaiting asyncio' event, part waits for client side to send a callback.
