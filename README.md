@@ -1,6 +1,6 @@
 # file converter app
 
-A simple converter I've built to get a grasp of fullstack application development. 
+A simple converter I've built to get a grasp of fullstack application development. The goal was to make something work and get used to the process of development. 
 All processing is done by libraries listed below. 
 
 <br>
