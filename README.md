@@ -16,8 +16,8 @@ All processing is done by libraries listed below.
 
 ## development notes
 
-- I used FASTAPI.
-- Most endpoints strictly depend on other endpoints' results. Part of the realization depend on JS' synchronous nature, part is synchronized by awaiting asyncio' event, part waits for client side to send a callback.
+I used FASTAPI. <br><br>
+Most endpoints strictly depend on other endpoints' results. Part of the realization depend on JS' synchronous nature, part is synchronized by awaiting asyncio' event, part waits for client side to send a callback.
   
 ### roadmap
 - client sends an original file and the choosen format (that triggers correct convertation later) —>
@@ -36,6 +36,6 @@ All processing is done by libraries listed below.
 
 ## how to install and run
 
-0. The Docker image is on Docker Hub, at "stardain/converter-app" repository.
-1. Pull an image with any open port on your machine by using `docker run -dp 0.0.0.0:yourport:8000 stardain/converter-app`.
-2. Run a container by using `docker run stardain/converter-app:latest`.
+0. the Docker image is on Docker Hub, at "stardain/converter-app" repository
+1. pull an image with any open port on your machine by using `docker run -dp 0.0.0.0:yourport:8000 stardain/converter-app`
+2. run a container by using `docker run stardain/converter-app:latest`.
